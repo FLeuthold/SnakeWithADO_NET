@@ -1,6 +1,6 @@
-# We only need to ignore meson build directories
 SnakeProjekt/bin
 SnakeProjekt/obj
 packages/
 .vs/
 .vscode
+Bilder/
