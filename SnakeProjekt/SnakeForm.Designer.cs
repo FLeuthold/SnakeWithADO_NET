@@ -158,7 +158,7 @@ namespace Snake
             this.btnPunkte.TabIndex = 15;
             this.btnPunkte.Text = "Punkte eintragen";
             this.btnPunkte.UseVisualStyleBackColor = true;
-            this.btnPunkte.Click += new System.EventHandler(this.btnPunkte_Click);
+            this.btnPunkte.Click += new System.EventHandler(this.BtnPunkte_Click);
             // 
             // FrmSpiel
             // 

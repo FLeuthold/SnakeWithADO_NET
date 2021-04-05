@@ -1,6 +1,7 @@
 ﻿//INF2018c, Fabio Leuthold, 26.05.2019
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -22,8 +23,7 @@ namespace Snake
         int countdown;
 
         int punkte;
-
-        String connStr = "Server = . ; Database=SnakeDB;Trusted_Connection=True;";
+        readonly String connStr = ConfigurationManager.ConnectionStrings["SnakeDB"].ConnectionString;
 
         public FrmSpiel()
         {
@@ -31,16 +31,18 @@ namespace Snake
 
         }
 
-        private void init()
+        private void Init()
         {
             countdown = 20;
             punkte = 0;
             schlange = new List<PictureBox>(10 * 5);
             aepfel = new List<PictureBox>(10);
-            kopf = new PictureBox();
-            kopf.BackColor = Color.Lime;
-            kopf.Location = new Point(pnlSpiel.Width / 2, pnlSpiel.Height / 2);
-            kopf.Size = new Size(20, 20);
+            kopf = new PictureBox
+            {
+                BackColor = Color.Lime,
+                Location = new Point(pnlSpiel.Width / 2, pnlSpiel.Height / 2),
+                Size = new Size(20, 20)
+            };
             dx = kopf.Size.Width;
             dy = 0;
             //schlange.Add(kopf);
@@ -50,10 +52,12 @@ namespace Snake
             ResourceManager rm = Snake.Properties.Resources.ResourceManager;
             for (int i = 0; i < 10; i++)
             {
-                
-                PictureBox apfel = new PictureBox();
-                apfel.Tag = rand.Next(2, 10);
-                apfel.BackColor = Color.Red;
+
+                PictureBox apfel = new PictureBox
+                {
+                    Tag = rand.Next(2, 10),
+                    BackColor = Color.Red
+                };
 
                 int seite = 40;
                 apfel.Size = new Size(seite, seite);
@@ -111,11 +115,11 @@ namespace Snake
         {
             dgvPunkte.AutoGenerateColumns = false;
             // TODO: Diese Codezeile lädt Daten in die Tabelle "snakeDBDataSet.Spiel". Sie können sie bei Bedarf verschieben oder entfernen.
-            refresh();
-            init();
+            DgvPunkte_Refresh();
+            Init();
         }
 
-        private void refresh()
+        private void DgvPunkte_Refresh()
         {
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -137,16 +141,14 @@ namespace Snake
         {
 
             // Schlange bewegt sich weiter
-            Point posAlt = new Point(0, 0);
-            Point posNeu = new Point(0, 0);
 
             //Zwei verschiedene Algorithmen:
             //1. Kopf bewegt sich nach dx und dy
             //2. andere Elemente folgen hinterher
-            posAlt = kopf.Location;
+            Point posAlt = kopf.Location;
             kopf.Location = new Point(kopf.Location.X + dx, kopf.Location.Y + dy);
             foreach (PictureBox element in schlange){
-                posNeu = element.Location;
+                Point posNeu = element.Location;
                 element.Location = posAlt;
                 posAlt = posNeu;
             }
@@ -198,13 +200,14 @@ namespace Snake
             
             if(wachsenCount > 0)
             {
-                PictureBox element = new PictureBox();
-                element.BackColor = Color.Green;
-                element.Location = posAlt;
-                posAlt = posNeu;
+                PictureBox element = new PictureBox
+                {
+                    BackColor = Color.Green,
+                    Location = posAlt
+                };
                 //element.Location = new Point(50, 50);
                 element.Size = new Size(20, 20);
-                schlange.Add(element);
+                schlange.Add(item: element);
                 pnlSpiel.Controls.Add(element);
                 wachsenCount--;
             }
@@ -220,7 +223,7 @@ namespace Snake
         private void BtnReset_Click(object sender, EventArgs e)
         {
             pnlSpiel.Controls.Clear();
-            init();
+            Init();
         }
 
         private void TmrCountdown_Tick(object sender, EventArgs e)
@@ -241,7 +244,7 @@ namespace Snake
 
 
 
-        private void btnPunkte_Click(object sender, EventArgs e)
+        private void BtnPunkte_Click(object sender, EventArgs e)
         {
             int punkt = Int32.Parse(txtPunkte.Text);
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -258,7 +261,7 @@ namespace Snake
                 
             }
 
-            refresh();
+            DgvPunkte_Refresh();
             //Form1_Load(sender, e);
         }
 
