@@ -255,8 +255,10 @@ namespace Snake
 
                 }
 
-                refresh();
+                
             }
+
+            refresh();
             //Form1_Load(sender, e);
         }
 
