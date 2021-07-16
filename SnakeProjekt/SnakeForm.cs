@@ -13,11 +13,10 @@ namespace Snake
 {
     public partial class FrmSpiel : Form
     {
-        List<PictureBox> schlange;
+        Queue<PictureBox> schlange;
         PictureBox kopf;
         int dx, dy;
         int wachsenCount;        
-
         List<PictureBox> aepfel;
         
         int countdown;
@@ -35,7 +34,7 @@ namespace Snake
         {
             countdown = 20;
             punkte = 0;
-            schlange = new List<PictureBox>(10 * 5);
+            schlange = new Queue<PictureBox>(10 * 6);
             aepfel = new List<PictureBox>(10);
             kopf = new PictureBox
             {
@@ -62,6 +61,7 @@ namespace Snake
                 int seite = 40;
                 apfel.Size = new Size(seite, seite);
                 apfel.Location = new Point(rand.Next(0, pnlSpiel.Width - seite), rand.Next(0, pnlSpiel.Height - seite));
+                
                 aepfel.Add(apfel);
                 pnlSpiel.Controls.Add(apfel);
                 apfel.Image = new Bitmap((Image)rm.GetObject("Apfel" + apfel.Tag), new Size(seite, seite));
@@ -140,18 +140,29 @@ namespace Snake
         private void TmrSpiel_Tick(object sender, EventArgs e)
         {
 
-            // Schlange bewegt sich weiter
-
+            //Schlange bewegt sich weiter
             //Zwei verschiedene Algorithmen:
             //1. Kopf bewegt sich nach dx und dy
-            //2. andere Elemente folgen hinterher
+            //2. letztes Element kommt an alte Kopfposition
             Point posAlt = kopf.Location;
-            kopf.Location = new Point(kopf.Location.X + dx, kopf.Location.Y + dy);
-            foreach (PictureBox element in schlange){
+            kopf.Location = new Point(kopf.Location.X + dx, kopf.Location.Y + dy);           
+            if(schlange.Count > 0)
+            {
+                var letzte = schlange.Dequeue();
+                
+                letzte.Location = posAlt;
+
+                schlange.Enqueue(letzte);
+            }
+                
+            /*foreach (var element in schlange)
+            {
                 Point posNeu = element.Location;
                 element.Location = posAlt;
                 posAlt = posNeu;
-            }
+            }*/
+
+            pnlSpiel.Refresh();
 
             if (kopf.Location.X < 0 || 
                 kopf.Location.Y < 0 || 
@@ -207,7 +218,7 @@ namespace Snake
                 };
                 //element.Location = new Point(50, 50);
                 element.Size = new Size(20, 20);
-                schlange.Add(item: element);
+                schlange.Enqueue(item: element);
                 pnlSpiel.Controls.Add(element);
                 wachsenCount--;
             }
