@@ -1,5 +1,5 @@
-SnakeProjekt/bin
-SnakeProjekt/obj
+bin/
+obj/
 packages/
 .vs/
 .vscode
